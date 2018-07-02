@@ -61,11 +61,40 @@ void Wire::step() {
 	inputModule->inputs[inputId].value = value;
 }
 
+class AudioProcessor {
+public:
+	AudioProcessor():
+	running(true), thread([this]{ audioThreadFunction(); })
+	{ }
+
+	void Stop() {
+		running = false;
+		thread.join();
+	}
+
+	void audioThreadFunction() {
+
+		while (running) {
+			// run this thread as a busy loop
+		}
+
+	}
+
+private:
+	volatile bool running;
+	std::thread thread;
+};
+
+static std::vector<AudioProcessor*> audioProcessors;
+
 
 void engineInit() {
 }
 
 void engineDestroy() {
+
+	engineSetAudioThreads(0);
+
 	// Make sure there are no wires or modules in the rack on destruction. This suggests that a module failed to remove itself before the RackWidget was destroyed.
 	assert(gWires.empty());
 	assert(gModules.empty());
@@ -198,6 +227,57 @@ void engineStart() {
 void engineStop() {
 	running = false;
 	thread.join();
+}
+
+bool engineAddAudioThread() {
+	info("Add audio processing thread");
+
+	VIPLock vipLock(vipMutex);
+	std::lock_guard<std::mutex> lock(mutex);
+
+	if (audioProcessors.size() >= std::thread::hardware_concurrency()-1) return false;
+
+	audioProcessors.push_back(new AudioProcessor());
+
+	return true;
+}
+
+bool engineRemoveAudioThread() {
+	info("Remove audio processing thread");
+
+	VIPLock vipLock(vipMutex);
+	std::lock_guard<std::mutex> lock(mutex);
+
+	if (audioProcessors.size() > 0) {
+		AudioProcessor* audioProcessor = audioProcessors.back();
+		audioProcessors.pop_back();
+		audioProcessor->Stop();
+		delete audioProcessor;
+
+		return true;
+	}
+
+	return false;
+}
+
+int engineGetAudioThreads() {
+	VIPLock vipLock(vipMutex);
+	std::lock_guard<std::mutex> lock(mutex);
+
+	return audioProcessors.size() + 1;
+}
+
+void engineSetAudioThreads(int threads) {
+	info("Set audio threads %d", threads);
+
+	while (threads > engineGetAudioThreads()) {
+		if (!engineAddAudioThread()) break;
+	}
+
+	while (threads < engineGetAudioThreads()) {
+		if (!engineRemoveAudioThread()) break;
+	}
+
 }
 
 void engineAddModule(Module *module) {
