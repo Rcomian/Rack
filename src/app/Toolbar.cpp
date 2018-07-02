@@ -2,6 +2,7 @@
 #include "window.hpp"
 #include "engine.hpp"
 #include "asset.hpp"
+#include <thread>
 
 
 namespace rack {
@@ -140,6 +141,43 @@ struct SampleRateButton : TooltipIconButton {
 	}
 };
 
+struct AudioThreadItem : MenuItem {
+	int threads;
+	void onAction(EventAction &e) override {
+		engineSetAudioThreads(threads);
+	}
+};
+
+struct AudioThreadsButton : TooltipIconButton {
+	AudioThreadsButton() {
+		setSVG(SVG::load(assetGlobal("res/icons/noun_1401512_cc.svg")));
+		tooltipText = "Set number of audio threads";
+	}
+	void onAction(EventAction &e) override {
+		Menu *menu = gScene->createMenu();
+		menu->box.pos = getAbsoluteOffset(Vec(0, box.size.y));
+		menu->box.size.x = box.size.x;
+
+		menu->addChild(MenuLabel::create("Number of audio threads"));
+
+		// Add the basic engine thread
+		AudioThreadItem *item = new AudioThreadItem();
+		item->text = stringf("%d thread", 1);
+		item->rightText = CHECKMARK(engineGetAudioThreads() == 1);
+		item->threads = 1;
+		menu->addChild(item);
+
+		auto maxThreads = std::thread::hardware_concurrency();
+		for (int t = 2; t < maxThreads; t += 1) { // add extra threads, range 2 to (hardware threads -1)
+			AudioThreadItem *item = new AudioThreadItem();
+			item->text = stringf("%d threads", t);
+			item->rightText = CHECKMARK(engineGetAudioThreads() == t);
+			item->threads = t;
+			menu->addChild(item);
+		}
+	}
+};
+
 struct RackLockButton : TooltipIconButton {
 	RackLockButton() {
 		setSVG(SVG::load(assetGlobal("res/icons/noun_468341_cc.svg")));
@@ -175,6 +213,7 @@ Toolbar::Toolbar() {
 
 	layout->addChild(new SampleRateButton());
 	layout->addChild(new PowerMeterButton());
+	layout->addChild(new AudioThreadsButton());
 	layout->addChild(new RackLockButton());
 
 	wireOpacitySlider = new Slider();
