@@ -100,6 +100,38 @@ void engineDestroy() {
 	assert(gModules.empty());
 }
 
+static void moduleStep(Module* module) {
+	std::chrono::high_resolution_clock::time_point startTime;
+	if (gPowerMeter) {
+		startTime = std::chrono::high_resolution_clock::now();
+
+		module->step();
+
+		auto stopTime = std::chrono::high_resolution_clock::now();
+		float cpuTime = std::chrono::duration<float>(stopTime - startTime).count() * sampleRate;
+		module->cpuTime += (cpuTime - module->cpuTime) * sampleTime / 0.5f;
+	}
+	else {
+		module->step();
+	}
+
+	// Step ports
+	for (Input &input : module->inputs) {
+		if (input.active) {
+			float value = input.value / 5.f;
+			input.plugLights[0].setBrightnessSmooth(value);
+			input.plugLights[1].setBrightnessSmooth(-value);
+		}
+	}
+	for (Output &output : module->outputs) {
+		if (output.active) {
+			float value = output.value / 5.f;
+			output.plugLights[0].setBrightnessSmooth(value);
+			output.plugLights[1].setBrightnessSmooth(-value);
+		}
+	}
+}
+
 static void engineStep() {
 	// Sample rate
 	if (sampleRateRequested != sampleRate) {
@@ -143,35 +175,7 @@ static void engineStep() {
 
 	// Step modules
 	for (Module *module : gModules) {
-		std::chrono::high_resolution_clock::time_point startTime;
-		if (gPowerMeter) {
-			startTime = std::chrono::high_resolution_clock::now();
-
-			module->step();
-
-			auto stopTime = std::chrono::high_resolution_clock::now();
-			float cpuTime = std::chrono::duration<float>(stopTime - startTime).count() * sampleRate;
-			module->cpuTime += (cpuTime - module->cpuTime) * sampleTime / 0.5f;
-		}
-		else {
-			module->step();
-		}
-
-		// Step ports
-		for (Input &input : module->inputs) {
-			if (input.active) {
-				float value = input.value / 5.f;
-				input.plugLights[0].setBrightnessSmooth(value);
-				input.plugLights[1].setBrightnessSmooth(-value);
-			}
-		}
-		for (Output &output : module->outputs) {
-			if (output.active) {
-				float value = output.value / 5.f;
-				output.plugLights[0].setBrightnessSmooth(value);
-				output.plugLights[1].setBrightnessSmooth(-value);
-			}
-		}
+		moduleStep(module);
 	}
 
 	// Step cables by moving their output values to inputs
