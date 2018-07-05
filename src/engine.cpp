@@ -8,6 +8,7 @@
 #include <thread>
 #include <xmmintrin.h>
 #include <pmmintrin.h>
+#include <atomic>
 
 #include "engine.hpp"
 
@@ -61,10 +62,16 @@ void Wire::step() {
 	inputModule->inputs[inputId].value = value;
 }
 
+static void moduleStep(Module*);
+static std::atomic_int moduleIndex;
+static std::atomic_int completedProcessors;
+
 class AudioProcessor {
 public:
 	AudioProcessor():
-	running(true), thread([this]{ audioThreadFunction(); })
+	stepping(false),
+	running(true),
+	thread([this]{ audioThreadFunction(); })
 	{ }
 
 	void Stop() {
@@ -72,15 +79,37 @@ public:
 		thread.join();
 	}
 
+	void Step() {
+		stepping = true;
+	}
+
+	bool IsStepping() {
+		return stepping;
+	}
+
 	void audioThreadFunction() {
 
 		while (running) {
 			// run this thread as a busy loop
+
+			while (running && !stepping) {} // Busy wait for stepping to set
+
+			if (!running) return;
+
+			int next = moduleIndex += 1;
+			while (next < gModules.size()) {
+				moduleStep(gModules[next]);
+				next = moduleIndex += 1;
+			}
+
+			stepping = false;
+			completedProcessors++;
 		}
 
 	}
 
 private:
+	volatile bool stepping;
 	volatile bool running;
 	std::thread thread;
 };
@@ -173,10 +202,22 @@ static void engineStep() {
 		}
 	}
 
+	moduleIndex = -1;
+	completedProcessors = 0;
+
 	// Step modules
-	for (Module *module : gModules) {
-		moduleStep(module);
+	for (auto audioProcessor : audioProcessors) {
+		audioProcessor->Step();
 	}
+
+	int next = moduleIndex += 1;
+	while (next < gModules.size()) {
+		moduleStep(gModules[next]);
+		next = moduleIndex += 1;
+	}
+
+	auto waitingFor = audioProcessors.size();
+	while (completedProcessors < waitingFor) {}
 
 	// Step cables by moving their output values to inputs
 	for (Wire *wire : gWires) {
