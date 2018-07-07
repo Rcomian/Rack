@@ -66,9 +66,11 @@ static void moduleStep(Module*);
 static std::atomic_int moduleIndex;
 static std::atomic_int completedProcessors;
 
+
 class AudioProcessor {
 public:
 	AudioProcessor():
+	sleeping(false),
 	stepping(false),
 	running(true),
 	thread([this]{ audioThreadFunction(); })
@@ -87,12 +89,27 @@ public:
 		return stepping;
 	}
 
+	void Sleep() {
+		sleepMutex.lock();
+		sleeping = true;
+	}
+
+	void Wake() {
+		if (sleeping) {
+			sleepMutex.unlock();
+			sleeping = false;
+		}
+	}
+
 	void audioThreadFunction() {
 
 		while (running) {
 			// run this thread as a busy loop
 
-			while (running && !stepping) {} // Busy wait for stepping to set
+			while (running && !stepping) { // Busy wait for stepping to set
+				sleepMutex.lock();
+				sleepMutex.unlock();
+			} 
 
 			if (!running) return;
 
@@ -112,6 +129,8 @@ private:
 	volatile bool stepping;
 	volatile bool running;
 	std::thread thread;
+	std::mutex sleepMutex;
+	bool sleeping;
 };
 
 static std::vector<AudioProcessor*> audioProcessors;
@@ -160,6 +179,8 @@ static void moduleStep(Module* module) {
 		}
 	}
 }
+
+std::mutex mainEngineSleepMutex;
 
 static void engineStep() {
 	// Sample rate
@@ -217,7 +238,10 @@ static void engineStep() {
 	}
 
 	auto waitingFor = audioProcessors.size();
-	while (completedProcessors < waitingFor) {}
+	while (completedProcessors < waitingFor) {
+		mainEngineSleepMutex.lock();
+		mainEngineSleepMutex.unlock();
+	}
 
 	// Step cables by moving their output values to inputs
 	for (Wire *wire : gWires) {
@@ -259,7 +283,9 @@ static void engineRun() {
 		// The number of steps to wait before possibly sleeping
 		const double aheadMax = 1.0; // seconds
 		if (ahead > aheadMax) {
+			engineSleep();
 			std::this_thread::sleep_for(std::chrono::duration<double>(stepTime));
+			engineWake();
 		}
 	}
 }
@@ -323,6 +349,20 @@ void engineSetAudioThreads(int threads) {
 		if (!engineRemoveAudioThread()) break;
 	}
 
+}
+
+void engineSleep() {
+	mainEngineSleepMutex.lock();
+	for (auto audioProcessor : audioProcessors) {
+		audioProcessor->Sleep();
+	}
+}
+
+void engineWake() {
+	for (auto audioProcessor : audioProcessors) {
+		audioProcessor->Wake();
+	}
+	mainEngineSleepMutex.unlock();
 }
 
 void engineAddModule(Module *module) {
