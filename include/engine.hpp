@@ -133,7 +133,8 @@ float engineGetSampleTime();
 /** Sound processing thread management */
 int engineGetAudioThreads();
 void engineSetAudioThreads(int threads);
-
+void engineSleep();
+void engineWake();
 
 extern bool gPaused;
 /** Plugins should not manipulate other modules or wires unless that is the entire purpose of the module.
