@@ -107,8 +107,9 @@ public:
 			// run this thread as a busy loop
 
 			while (running && !stepping) { // Busy wait for stepping to set
-				sleepMutex.lock();
-				sleepMutex.unlock();
+				if (sleepMutex.try_lock_for(std::chrono::milliseconds(200))) {
+					sleepMutex.unlock();
+				}
 			} 
 
 			if (!running) return;
@@ -129,7 +130,7 @@ private:
 	volatile bool stepping;
 	volatile bool running;
 	std::thread thread;
-	std::mutex sleepMutex;
+	std::timed_mutex sleepMutex;
 	bool sleeping;
 };
 
