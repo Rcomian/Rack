@@ -560,7 +560,8 @@ void appDestroy();
 void appModuleBrowserCreate();
 json_t *appModuleBrowserToJson();
 void appModuleBrowserFromJson(json_t *rootJ);
-
+json_t *appWireColorsToJson();
+void appWireColorsFromJson(json_t *wireColorsJ);
 
 /** Deprecated. Will be removed in v1 */
 json_t *colorToJson(NVGcolor color);
