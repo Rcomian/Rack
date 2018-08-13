@@ -512,7 +512,11 @@ void RackWidget::onMouseDown(EventMouseDown &e) {
 		return;
 
 	if (e.button == 1) {
-		appModuleBrowserCreate();
+		if (wireContainer->activeWire == NULL) {
+			appModuleBrowserCreate();
+		} else {
+			wireContainer->activeWire->color = WireWidget::nextColor();
+		}
 	}
 	e.consumed = true;
 	e.target = this;

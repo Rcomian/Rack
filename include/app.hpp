@@ -130,6 +130,8 @@ struct WireWidget : OpaqueWidget {
 	void fromJson(json_t *rootJ);
 	void draw(NVGcontext *vg) override;
 	void drawPlugs(NVGcontext *vg);
+
+	static NVGcolor nextColor();
 };
 
 struct WireContainer : TransparentWidget {
