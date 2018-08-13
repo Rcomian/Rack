@@ -73,6 +73,9 @@ static json_t *settingsToJson() {
 	// checkVersion
 	json_object_set_new(rootJ, "checkVersion", json_boolean(gCheckVersion));
 
+	// wireColors
+	json_object_set_new(rootJ, "wireColors", appWireColorsToJson());
+
 	return rootJ;
 }
 
@@ -151,6 +154,11 @@ static void settingsFromJson(json_t *rootJ) {
 	json_t *checkVersionJ = json_object_get(rootJ, "checkVersion");
 	if (checkVersionJ)
 		gCheckVersion = json_boolean_value(checkVersionJ);
+
+	// colors
+	json_t *wireColorsJ = json_object_get(rootJ, "wireColors");
+	if (wireColorsJ)
+		appWireColorsFromJson(wireColorsJ);
 }
 
 

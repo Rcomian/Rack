@@ -70,7 +70,7 @@ static void drawWire(NVGcontext *vg, Vec pos1, Vec pos2, NVGcolor color, float t
 }
 
 
-static const NVGcolor wireColors[] = {
+static std::vector<NVGcolor> wireColors = {
 	nvgRGB(0xc9, 0xb7, 0x0e), // yellow
 	nvgRGB(0xc9, 0x18, 0x47), // red
 	nvgRGB(0x0c, 0x8e, 0x15), // green
@@ -83,7 +83,7 @@ static const NVGcolor wireColors[] = {
 static int lastWireColorId = -1;
 
 NVGcolor WireWidget::nextColor() {
-	lastWireColorId = (lastWireColorId + 1) % LENGTHOF(wireColors);
+	lastWireColorId = (lastWireColorId + 1) % wireColors.size();
 	return wireColors[lastWireColorId];
 }
 
@@ -161,6 +161,28 @@ void WireWidget::fromJson(json_t *rootJ) {
 		else
 			color = colorFromHexString(json_string_value(colorJ));
 	}
+}
+
+void appWireColorsFromJson(json_t *wireColorsJ) {
+	info("Clearing wire colors ready to load");
+	wireColors.clear();
+
+	size_t i;
+	json_t *wireColorJ;
+	json_array_foreach(wireColorsJ, i, wireColorJ) {
+		info("Loading wire color: %s", json_string_value(wireColorJ));
+		wireColors.push_back(colorFromHexString(json_string_value(wireColorJ)));
+	}
+}
+
+json_t* appWireColorsToJson() {
+	auto wireColorsJ = json_array();
+	for (auto color : wireColors) {
+		std::string s = colorToHexString(color);
+		info("Saving wire color: %s", s.c_str());
+		json_array_append_new(wireColorsJ, json_string(s.c_str()));
+	}
+	return wireColorsJ;
 }
 
 void WireWidget::draw(NVGcontext *vg) {
