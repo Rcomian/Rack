@@ -82,10 +82,13 @@ static const NVGcolor wireColors[] = {
 };
 static int lastWireColorId = -1;
 
+NVGcolor WireWidget::nextColor() {
+	lastWireColorId = (lastWireColorId + 1) % LENGTHOF(wireColors);
+	return wireColors[lastWireColorId];
+}
 
 WireWidget::WireWidget() {
-	lastWireColorId = (lastWireColorId + 1) % LENGTHOF(wireColors);
-	color = wireColors[lastWireColorId];
+	color = WireWidget::nextColor();
 }
 
 WireWidget::~WireWidget() {
