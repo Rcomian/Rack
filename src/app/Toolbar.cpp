@@ -140,9 +140,45 @@ struct SampleRateButton : TooltipIconButton {
 	}
 };
 
+struct AppendWholePatchItem : MenuItem {
+	AppendWholePatchItem() {
+		text = "Whole Patch";
+	}
+	void onAction(EventAction &e) override {
+		//engineAppendPatch(wholePatch);
+	}
+};
+
+struct AppendComponentItem : MenuItem {
+	AppendComponentItem() {
+		text = "Exclude First Row";
+	}
+	void onAction(EventAction &e) override {
+		//engineAppendPatch(wholePatch);
+	}
+};
+
+
+struct AppendPatchButton : TooltipIconButton {
+	AppendPatchButton() {
+		setSVG(SVG::load(assetGlobal("res/icons/noun_1234095_cc.svg")));
+		tooltipText = "Append a patch below this patch";
+	}
+	void onAction(EventAction &e) override {
+		Menu *menu = gScene->createMenu();
+		menu->box.pos = getAbsoluteOffset(Vec(0, box.size.y));
+		menu->box.size.x = box.size.x;
+
+		menu->addChild(MenuLabel::create("Append Patch"));
+
+		menu->addChild(new AppendWholePatchItem());
+		menu->addChild(new AppendComponentItem());
+	}
+};
+
 struct RackLockButton : TooltipIconButton {
 	RackLockButton() {
-		setSVG(SVG::load(assetGlobal("res/icons/noun_468341_cc.svg")));
+		setSVG(SVG::load(assetGlobal("res/icons/noun_31859_173262_cc.svg")));
 		tooltipText = "Lock modules";
 	}
 	void onAction(EventAction &e) override {
@@ -168,6 +204,7 @@ Toolbar::Toolbar() {
 
 	layout->addChild(new NewButton());
 	layout->addChild(new OpenButton());
+	layout->addChild(new AppendPatchButton());
 	layout->addChild(new SaveButton());
 	layout->addChild(new SaveAsButton());
 	layout->addChild(new RevertButton());
