@@ -145,7 +145,7 @@ struct AppendWholePatchItem : MenuItem {
 		text = "Whole Patch";
 	}
 	void onAction(EventAction &e) override {
-		//engineAppendPatch(wholePatch);
+		gRackWidget->appendDialog(false);
 	}
 };
 
@@ -154,7 +154,7 @@ struct AppendComponentItem : MenuItem {
 		text = "Exclude First Row";
 	}
 	void onAction(EventAction &e) override {
-		//engineAppendPatch(wholePatch);
+		gRackWidget->appendDialog(true);
 	}
 };
 
