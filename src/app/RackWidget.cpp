@@ -87,6 +87,24 @@ void RackWidget::loadDialog() {
 	osdialog_filters_free(filters);
 }
 
+void RackWidget::appendDialog(bool skipFirstRow) {
+	std::string dir;
+	if (lastPath.empty()) {
+		dir = assetLocal("patches");
+		systemCreateDirectory(dir);
+	}
+	else {
+		dir = stringDirectory(lastPath);
+	}
+	osdialog_filters *filters = osdialog_filters_parse(PATCH_FILTERS.c_str());
+	char *path = osdialog_file(OSDIALOG_OPEN, dir.c_str(), NULL, filters);
+	if (path) {
+		append(path, skipFirstRow);
+		free(path);
+	}
+	osdialog_filters_free(filters);
+}
+
 void RackWidget::saveDialog() {
 	if (!lastPath.empty()) {
 		save(lastPath);
@@ -151,7 +169,37 @@ void RackWidget::load(std::string filename) {
 	json_t *rootJ = json_loadf(file, 0, &error);
 	if (rootJ) {
 		clear();
-		fromJson(rootJ);
+		fromJson(rootJ, 0, 0);
+		json_decref(rootJ);
+	}
+	else {
+		std::string message = stringf("JSON parsing error at %s %d:%d %s", error.source, error.line, error.column, error.text);
+		osdialog_message(OSDIALOG_WARNING, OSDIALOG_OK, message.c_str());
+	}
+
+	fclose(file);
+}
+
+void RackWidget::append(std::string filename, bool skipFirstRow) {
+	info("Appending patch %s - skipping first row %s", filename.c_str(), skipFirstRow ? "yes" : "no");
+
+	FILE *file = fopen(filename.c_str(), "r");
+	if (!file) {
+		// Exit silently
+		return;
+	}
+
+	json_error_t error;
+	json_t *rootJ = json_loadf(file, 0, &error);
+	if (rootJ) {
+		int rowOffset = 0;
+		for (auto widget : moduleContainer->children) {
+			auto y = (widget->box.pos.y / RACK_GRID_HEIGHT);
+			if (y >= rowOffset) {
+				rowOffset = y + 1;
+			}
+		}
+		fromJson(rootJ, rowOffset, skipFirstRow);
 		json_decref(rootJ);
 	}
 	else {
@@ -246,8 +294,14 @@ json_t *RackWidget::toJson() {
 	return rootJ;
 }
 
-void RackWidget::fromJson(json_t *rootJ) {
+void RackWidget::fromJson(json_t *rootJ, int rowOffset, bool skipFirstRow) {
 	std::string message;
+
+	if (skipFirstRow && rowOffset > 1) {
+		// compensate skipping the first row by loading everything in the patch one row higher than we otherwise would
+		// unless we are appending to an empty patch, then leave the top row empty
+		rowOffset -= 1;
+	}
 
 	// version
 	std::string version;
@@ -278,29 +332,34 @@ void RackWidget::fromJson(json_t *rootJ) {
 			json_object_set(moduleJ, "legacy", json_integer(legacy));
 		}
 
-		ModuleWidget *moduleWidget = moduleFromJson(moduleJ);
+		json_t *posJ = json_object_get(moduleJ, "pos");
+		double x, y;
+		json_unpack(posJ, "[F, F]", &x, &y);
 
-		if (moduleWidget) {
-			// pos
-			json_t *posJ = json_object_get(moduleJ, "pos");
-			double x, y;
-			json_unpack(posJ, "[F, F]", &x, &y);
-			Vec pos = Vec(x, y);
-			if (legacy && legacy <= 1) {
-				moduleWidget->box.pos = pos;
+		if (y > 0 || !skipFirstRow) {
+			ModuleWidget *moduleWidget = moduleFromJson(moduleJ);
+
+			if (moduleWidget) {
+				// pos
+				Vec pos = Vec(x, y);
+				if (legacy && legacy <= 1) {
+					moduleWidget->box.pos = pos;
+				}
+				else {
+					moduleWidget->box.pos = pos.mult(RACK_GRID_SIZE);
+				}
+
+				moduleWidget->box.pos.y += (rowOffset * RACK_GRID_HEIGHT);
+
+				moduleWidgets[moduleId] = moduleWidget;
 			}
 			else {
-				moduleWidget->box.pos = pos.mult(RACK_GRID_SIZE);
+				json_t *pluginSlugJ = json_object_get(moduleJ, "plugin");
+				json_t *modelSlugJ = json_object_get(moduleJ, "model");
+				std::string pluginSlug = json_string_value(pluginSlugJ);
+				std::string modelSlug = json_string_value(modelSlugJ);
+				message += stringf("Could not find module \"%s\" of plugin \"%s\"\n", modelSlug.c_str(), pluginSlug.c_str());
 			}
-
-			moduleWidgets[moduleId] = moduleWidget;
-		}
-		else {
-			json_t *pluginSlugJ = json_object_get(moduleJ, "plugin");
-			json_t *modelSlugJ = json_object_get(moduleJ, "model");
-			std::string pluginSlug = json_string_value(pluginSlugJ);
-			std::string modelSlug = json_string_value(modelSlugJ);
-			message += stringf("Could not find module \"%s\" of plugin \"%s\"\n", modelSlug.c_str(), pluginSlug.c_str());
 		}
 	}
 
