@@ -70,6 +70,8 @@ static std::atomic_int completedProcessors;
 class AudioProcessor {
 public:
 	AudioProcessor():
+	blocksize(1),
+	initialblock(1),
 	sleeping(false),
 	stepping(false),
 	running(true),
@@ -81,7 +83,9 @@ public:
 		thread.join();
 	}
 
-	void Step() {
+	void Step(int blocksize, int initialblock) {
+		this->blocksize = blocksize;
+		this->initialblock = initialblock;
 		stepping = true;
 	}
 
@@ -114,10 +118,18 @@ public:
 
 			if (!running) return;
 
-			int next = moduleIndex += 1;
-			while (next < gModules.size()) {
-				moduleStep(gModules[next]);
-				next = moduleIndex += 1;
+
+			int modulecount = gModules.size();
+
+			int blockend = initialblock;
+			int first = blockend - blocksize;
+			while (first < modulecount) {
+				for (int next = first; next < blockend && next < modulecount; next += 1) {
+					moduleStep(gModules[modulecount-next-1]);
+				}
+
+				blockend = moduleIndex += blocksize;
+				first = blockend - blocksize;
 			}
 
 			stepping = false;
@@ -132,6 +144,8 @@ private:
 	std::thread thread;
 	std::timed_mutex sleepMutex;
 	bool sleeping;
+	int blocksize;
+	int initialblock;
 };
 
 static std::vector<AudioProcessor*> audioProcessors;
@@ -183,7 +197,7 @@ static void moduleStep(Module* module) {
 
 std::mutex mainEngineSleepMutex;
 
-static void engineStep() {
+void engineStep() {
 	// Sample rate
 	if (sampleRateRequested != sampleRate) {
 		sampleRate = sampleRateRequested;
@@ -224,18 +238,26 @@ static void engineStep() {
 		}
 	}
 
-	moduleIndex = -1;
 	completedProcessors = 0;
 
 	// Step modules
+	int blocksize = max(1, gModules.size() / ((audioProcessors.size()+1) * 3));
+	moduleIndex = blocksize * (audioProcessors.size()+1);
+	int modulecount = gModules.size();
+	int blockend = blocksize;
 	for (auto audioProcessor : audioProcessors) {
-		audioProcessor->Step();
+		audioProcessor->Step(blocksize, blockend);
+		blockend += blocksize;
 	}
 
-	int next = moduleIndex += 1;
-	while (next < gModules.size()) {
-		moduleStep(gModules[next]);
-		next = moduleIndex += 1;
+	int first = blockend - blocksize;
+	while (first < modulecount) {
+		for (int next = first; next < blockend && next < modulecount; next += 1) {
+			moduleStep(gModules[modulecount-next-1]);
+		}
+
+		blockend = moduleIndex += blocksize;
+		first = blockend - blocksize;
 	}
 
 	auto waitingFor = audioProcessors.size();
