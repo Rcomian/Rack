@@ -1,5 +1,12 @@
-# Free Rack
+# Rack
+# Experiment - multi-threading
 
+# Rack
+
+Make the existing engine multi-threaded.
+Use the rocket ship icon to choose how many threads you want to use.
+
+# Free Rack
 *FreeRack* is a free derivative version of the original open-source virtual modular synthesizer by VCV.
 
 This version is not officially supported in any way, do not contact VCV about issues related to this version of the software.
