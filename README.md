@@ -1,3 +1,8 @@
+# Experiment - module pushing
+
+Holding shift while moving a module left or right will push any other modules it hits out of the way.
+This lets you push a bunch of modules together to easily make space for another module.
+
 # Free Rack
 
 *FreeRack* is a free derivative version of the original open-source virtual modular synthesizer by VCV.
