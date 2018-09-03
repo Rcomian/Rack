@@ -11,3 +11,4 @@ Sound by Gregor Cresnar from the Noun Project
 Refresh by un·delivered from the Noun Project
 Lock by Andres Gleixner from the Noun Project
 boost by Dinosoft Labs from the Noun Project
+Health by Sergey Demushkin from the Noun Project
