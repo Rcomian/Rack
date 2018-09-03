@@ -183,8 +183,10 @@ struct RackWidget : OpaqueWidget {
 	void cloneModule(ModuleWidget *m);
 	/** Sets a module's box if non-colliding. Returns true if set */
 	bool requestModuleBox(ModuleWidget *m, Rect box);
+	std::vector<ModuleWidget*> getCollidingWidgets(ModuleWidget *m, Rect box);
 	/** Moves a module to the closest non-colliding position */
 	bool requestModuleBoxNearest(ModuleWidget *m, Rect box);
+	bool requestModuleBoxWithPush(ModuleWidget *m, Rect box);
 
 	void step() override;
 	void draw(NVGcontext *vg) override;
