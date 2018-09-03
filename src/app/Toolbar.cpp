@@ -70,7 +70,7 @@ struct AppendComponentItem : MenuItem {
 
 struct AppendPatchButton : TooltipIconButton {
 	AppendPatchButton() {
-		setSVG(SVG::load(assetGlobal("res/icons/noun_1234095_cc.svg")));
+		setSVG(SVG::load(assetGlobal("res/icons/noun_31859_173262_cc.svg")));
 		tooltipText = "Append a patch below this patch";
 	}
 	void onAction(EventAction &e) override {
@@ -178,7 +178,7 @@ struct SampleRateButton : TooltipIconButton {
 
 struct RackLockButton : TooltipIconButton {
 	RackLockButton() {
-		setSVG(SVG::load(assetGlobal("res/icons/noun_31859_173262_cc.svg")));
+		setSVG(SVG::load(assetGlobal("res/icons/noun_468341_cc.svg")));
 		tooltipText = "Lock modules";
 	}
 	void onAction(EventAction &e) override {
