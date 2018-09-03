@@ -1,3 +1,8 @@
+# Experiment - module pushing
+
+Holding shift while moving a module left or right will push any other modules it hits out of the way.
+This lets you push a bunch of modules together to easily make space for another module.
+
 # Rack
 
 *Rack* is the engine for the VCV open-source virtual modular synthesizer.
