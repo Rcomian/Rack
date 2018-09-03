@@ -113,6 +113,7 @@ public:
 			while (running && !stepping) { // Busy wait for stepping to set
 				if (sleepMutex.try_lock_for(std::chrono::milliseconds(200))) {
 					sleepMutex.unlock();
+					std::this_thread::yield();
 				}
 			} 
 
@@ -264,6 +265,7 @@ void engineStep() {
 	while (completedProcessors < waitingFor) {
 		mainEngineSleepMutex.lock();
 		mainEngineSleepMutex.unlock();
+		std::this_thread::yield();
 	}
 
 	// Step cables by moving their output values to inputs
