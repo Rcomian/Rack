@@ -1,3 +1,14 @@
+# Experiment - append-patch
+
+Append an existing patch below your current patch.
+
+Lets you build a library of components and compose them together.
+
+Use the folder with a plus icon to access the append menu.
+You can append a whole patch, or skip the first row of the patch you're appending.
+
+The skip first row feature lets you build a component with audio and test trigger modules in the first row that don't get added to the combined patch when you append it.
+
 # Free Rack
 
 *FreeRack* is a free derivative version of the original open-source virtual modular synthesizer by VCV.
