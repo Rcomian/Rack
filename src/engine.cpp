@@ -8,6 +8,7 @@
 #include <thread>
 #include <xmmintrin.h>
 #include <pmmintrin.h>
+#include <atomic>
 
 #include "engine.hpp"
 
@@ -61,17 +62,142 @@ void Wire::step() {
 	inputModule->inputs[inputId].value = value;
 }
 
+static void moduleStep(Module*);
+static std::atomic_int moduleIndex;
+static std::atomic_int completedProcessors;
+
+
+class AudioProcessor {
+public:
+	AudioProcessor():
+	blocksize(1),
+	initialblock(1),
+	sleeping(false),
+	stepping(false),
+	running(true),
+	thread([this]{ audioThreadFunction(); })
+	{ }
+
+	void Stop() {
+		running = false;
+		thread.join();
+	}
+
+	void Step(int blocksize, int initialblock) {
+		this->blocksize = blocksize;
+		this->initialblock = initialblock;
+		stepping = true;
+	}
+
+	bool IsStepping() {
+		return stepping;
+	}
+
+	void Sleep() {
+		sleepMutex.lock();
+		sleeping = true;
+	}
+
+	void Wake() {
+		if (sleeping) {
+			sleepMutex.unlock();
+			sleeping = false;
+		}
+	}
+
+	void audioThreadFunction() {
+
+		while (running) {
+			// run this thread as a busy loop
+
+			while (running && !stepping) { // Busy wait for stepping to set
+				if (sleepMutex.try_lock_for(std::chrono::milliseconds(200))) {
+					sleepMutex.unlock();
+				}
+			} 
+
+			if (!running) return;
+
+
+			int modulecount = gModules.size();
+
+			int blockend = initialblock;
+			int first = blockend - blocksize;
+			while (first < modulecount) {
+				for (int next = first; next < blockend && next < modulecount; next += 1) {
+					moduleStep(gModules[modulecount-next-1]);
+				}
+
+				blockend = moduleIndex += blocksize;
+				first = blockend - blocksize;
+			}
+
+			stepping = false;
+			completedProcessors++;
+		}
+
+	}
+
+private:
+	volatile bool stepping;
+	volatile bool running;
+	std::thread thread;
+	std::timed_mutex sleepMutex;
+	bool sleeping;
+	int blocksize;
+	int initialblock;
+};
+
+static std::vector<AudioProcessor*> audioProcessors;
+
 
 void engineInit() {
 }
 
 void engineDestroy() {
+
+	engineSetAudioThreads(0);
+
 	// Make sure there are no wires or modules in the rack on destruction. This suggests that a module failed to remove itself before the RackWidget was destroyed.
 	assert(gWires.empty());
 	assert(gModules.empty());
 }
 
-static void engineStep() {
+static void moduleStep(Module* module) {
+	std::chrono::high_resolution_clock::time_point startTime;
+	if (gPowerMeter) {
+		startTime = std::chrono::high_resolution_clock::now();
+
+		module->step();
+
+		auto stopTime = std::chrono::high_resolution_clock::now();
+		float cpuTime = std::chrono::duration<float>(stopTime - startTime).count() * sampleRate;
+		module->cpuTime += (cpuTime - module->cpuTime) * sampleTime / 0.5f;
+	}
+	else {
+		module->step();
+	}
+
+	// Step ports
+	for (Input &input : module->inputs) {
+		if (input.active) {
+			float value = input.value / 5.f;
+			input.plugLights[0].setBrightnessSmooth(value);
+			input.plugLights[1].setBrightnessSmooth(-value);
+		}
+	}
+	for (Output &output : module->outputs) {
+		if (output.active) {
+			float value = output.value / 5.f;
+			output.plugLights[0].setBrightnessSmooth(value);
+			output.plugLights[1].setBrightnessSmooth(-value);
+		}
+	}
+}
+
+std::mutex mainEngineSleepMutex;
+
+void engineStep() {
 	// Sample rate
 	if (sampleRateRequested != sampleRate) {
 		sampleRate = sampleRateRequested;
@@ -112,37 +238,32 @@ static void engineStep() {
 		}
 	}
 
+	completedProcessors = 0;
+
 	// Step modules
-	for (Module *module : gModules) {
-		std::chrono::high_resolution_clock::time_point startTime;
-		if (gPowerMeter) {
-			startTime = std::chrono::high_resolution_clock::now();
+	int blocksize = max(1, gModules.size() / ((audioProcessors.size()+1) * 3));
+	moduleIndex = blocksize * (audioProcessors.size()+1);
+	int modulecount = gModules.size();
+	int blockend = blocksize;
+	for (auto audioProcessor : audioProcessors) {
+		audioProcessor->Step(blocksize, blockend);
+		blockend += blocksize;
+	}
 
-			module->step();
-
-			auto stopTime = std::chrono::high_resolution_clock::now();
-			float cpuTime = std::chrono::duration<float>(stopTime - startTime).count() * sampleRate;
-			module->cpuTime += (cpuTime - module->cpuTime) * sampleTime / 0.5f;
-		}
-		else {
-			module->step();
+	int first = blockend - blocksize;
+	while (first < modulecount) {
+		for (int next = first; next < blockend && next < modulecount; next += 1) {
+			moduleStep(gModules[modulecount-next-1]);
 		}
 
-		// Step ports
-		for (Input &input : module->inputs) {
-			if (input.active) {
-				float value = input.value / 5.f;
-				input.plugLights[0].setBrightnessSmooth(value);
-				input.plugLights[1].setBrightnessSmooth(-value);
-			}
-		}
-		for (Output &output : module->outputs) {
-			if (output.active) {
-				float value = output.value / 5.f;
-				output.plugLights[0].setBrightnessSmooth(value);
-				output.plugLights[1].setBrightnessSmooth(-value);
-			}
-		}
+		blockend = moduleIndex += blocksize;
+		first = blockend - blocksize;
+	}
+
+	auto waitingFor = audioProcessors.size();
+	while (completedProcessors < waitingFor) {
+		mainEngineSleepMutex.lock();
+		mainEngineSleepMutex.unlock();
 	}
 
 	// Step cables by moving their output values to inputs
@@ -185,7 +306,9 @@ static void engineRun() {
 		// The number of steps to wait before possibly sleeping
 		const double aheadMax = 1.0; // seconds
 		if (ahead > aheadMax) {
+			engineSleep();
 			std::this_thread::sleep_for(std::chrono::duration<double>(stepTime));
+			engineWake();
 		}
 	}
 }
@@ -198,6 +321,71 @@ void engineStart() {
 void engineStop() {
 	running = false;
 	thread.join();
+}
+
+bool engineAddAudioThread() {
+	info("Add audio processing thread");
+
+	VIPLock vipLock(vipMutex);
+	std::lock_guard<std::mutex> lock(mutex);
+
+	if (audioProcessors.size() >= std::thread::hardware_concurrency()-1) return false;
+
+	audioProcessors.push_back(new AudioProcessor());
+
+	return true;
+}
+
+bool engineRemoveAudioThread() {
+	info("Remove audio processing thread");
+
+	VIPLock vipLock(vipMutex);
+	std::lock_guard<std::mutex> lock(mutex);
+
+	if (audioProcessors.size() > 0) {
+		AudioProcessor* audioProcessor = audioProcessors.back();
+		audioProcessors.pop_back();
+		audioProcessor->Stop();
+		delete audioProcessor;
+
+		return true;
+	}
+
+	return false;
+}
+
+int engineGetAudioThreads() {
+	VIPLock vipLock(vipMutex);
+	std::lock_guard<std::mutex> lock(mutex);
+
+	return audioProcessors.size() + 1;
+}
+
+void engineSetAudioThreads(int threads) {
+	info("Set audio threads %d", threads);
+
+	while (threads > engineGetAudioThreads()) {
+		if (!engineAddAudioThread()) break;
+	}
+
+	while (threads < engineGetAudioThreads()) {
+		if (!engineRemoveAudioThread()) break;
+	}
+
+}
+
+void engineSleep() {
+	mainEngineSleepMutex.lock();
+	for (auto audioProcessor : audioProcessors) {
+		audioProcessor->Sleep();
+	}
+}
+
+void engineWake() {
+	for (auto audioProcessor : audioProcessors) {
+		audioProcessor->Wake();
+	}
+	mainEngineSleepMutex.unlock();
 }
 
 void engineAddModule(Module *module) {
