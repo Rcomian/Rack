@@ -92,7 +92,9 @@ public:
 		while (running) {
 			// run this thread as a busy loop
 
-			while (running && !stepping) {} // Busy wait for stepping to set
+			while (running && !stepping) {
+				std::this_thread::yield();
+			} // Busy wait for stepping to set
 
 			if (!running) return;
 
@@ -217,7 +219,9 @@ static void engineStep() {
 	}
 
 	auto waitingFor = audioProcessors.size();
-	while (completedProcessors < waitingFor) {}
+	while (completedProcessors < waitingFor) {
+		std::this_thread::yield();
+	}
 
 	// Step cables by moving their output values to inputs
 	for (Wire *wire : gWires) {
