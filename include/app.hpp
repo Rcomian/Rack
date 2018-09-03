@@ -130,6 +130,8 @@ struct WireWidget : OpaqueWidget {
 	void fromJson(json_t *rootJ);
 	void draw(NVGcontext *vg) override;
 	void drawPlugs(NVGcontext *vg);
+
+	static NVGcolor nextColor();
 };
 
 struct WireContainer : TransparentWidget {
@@ -558,7 +560,8 @@ void appDestroy();
 void appModuleBrowserCreate();
 json_t *appModuleBrowserToJson();
 void appModuleBrowserFromJson(json_t *rootJ);
-
+json_t *appWireColorsToJson();
+void appWireColorsFromJson(json_t *wireColorsJ);
 
 /** Deprecated. Will be removed in v1 */
 json_t *colorToJson(NVGcolor color);
