@@ -516,7 +516,7 @@ bool RackWidget::requestModuleBoxWithPush(ModuleWidget *m, Rect box) {
 
 	for (auto colliding : colliders) {
 		Rect newCollidingBox = colliding->box;
-		if (toTheRight && colliding->box.pos.x > newBox.pos.x) {
+		if (toTheRight && colliding->box.pos.x >= newBox.pos.x) {
 			newCollidingBox.pos.x = newBox.pos.x + newBox.size.x;
 		} else if (toTheLeft && colliding->box.pos.x <= newBox.pos.x) {
 			newCollidingBox.pos.x = newBox.pos.x - colliding->box.size.x;
