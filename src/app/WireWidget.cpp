@@ -179,7 +179,6 @@ json_t* appWireColorsToJson() {
 	auto wireColorsJ = json_array();
 	for (auto color : wireColors) {
 		std::string s = colorToHexString(color);
-		info("Saving wire color: %s", s.c_str());
 		json_array_append_new(wireColorsJ, json_string(s.c_str()));
 	}
 	return wireColorsJ;
