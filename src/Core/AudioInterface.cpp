@@ -209,7 +209,9 @@ void AudioInterface::step() {
 				return (audioIO.outputBuffer.size() < (size_t) audioIO.blockSize);
 			};
 			auto timeout = std::chrono::milliseconds(200);
+			engineSleep();
 			if (audioIO.engineCv.wait_for(lock, timeout, cond)) {
+				engineWake();
 				// Push converted output
 				int inLen = outputBuffer.size();
 				int outLen = audioIO.outputBuffer.capacity();
@@ -218,6 +220,7 @@ void AudioInterface::step() {
 				audioIO.outputBuffer.endIncr(outLen);
 			}
 			else {
+				engineWake();
 				// Give up on pushing output
 				audioIO.active = false;
 				outputBuffer.clear();

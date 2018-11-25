@@ -1,3 +1,8 @@
+# Experiment - multi-threading
+
+Make the existing engine multi-threaded.
+Use the rocket ship icon to choose how many threads you want to use.
+
 # Rack
 
 *Rack* is the engine for the VCV open-source virtual modular synthesizer.
