@@ -15,6 +15,19 @@ You can append a whole patch, or skip the first row of the patch you're appendin
 The skip first row feature lets you build a component with audio and test trigger modules in the first row that don't get added to the combined patch when you append it.
 
 
+# Experiment - wire-colours
+
+This experiment lets you customise the available colours available and easily switch them while placing wire.
+
+When you run this version of rack for the first time and close it, a new section will be added to settings.json.
+This will be a list of all the wire colours you can choose from when patching up your rack.
+You can modify this list by adding your own html style colours - delete or change the existing ones and add as many new colours as you like.
+If it all goes wrong, delete the `wireColors` section entirely and you'll go back to the defaults when you next launch.
+
+When placing a wire, if you right-click as you drag it, you can cycle the current wire through all the available colours.
+
+There are many ways of finding the html value of the colours you want, just search the web for "html color picker" or something similar.
+
 # Rack
 
 *Rack* is the engine for the VCV open-source virtual modular synthesizer.

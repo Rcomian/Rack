@@ -76,6 +76,9 @@ static json_t *settingsToJson() {
 	// audioThreads
 	json_object_set_new(rootJ, "audioThreads", json_integer(engineGetAudioThreads()));
 
+	// wireColors
+	json_object_set_new(rootJ, "wireColors", appWireColorsToJson());
+
 	return rootJ;
 }
 
@@ -159,6 +162,11 @@ static void settingsFromJson(json_t *rootJ) {
 	json_t *audioThreadsJ = json_object_get(rootJ, "audioThreads");
 	if (audioThreadsJ)
 		engineSetAudioThreads(json_integer_value(audioThreadsJ));
+
+	// colors
+	json_t *wireColorsJ = json_object_get(rootJ, "wireColors");
+	if (wireColorsJ)
+		appWireColorsFromJson(wireColorsJ);
 }
 
 
