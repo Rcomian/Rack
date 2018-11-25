@@ -503,6 +503,22 @@ bool RackWidget::requestModuleBox(ModuleWidget *m, Rect box) {
 	return true;
 }
 
+std::vector<ModuleWidget*> RackWidget::getCollidingWidgets(ModuleWidget *m, Rect box) {
+	std::vector<ModuleWidget*> result;
+
+	if (box.pos.x < 0 || box.pos.y < 0)
+		return result;
+
+	for (Widget *child2 : moduleContainer->children) {
+		if (m == child2) continue;
+		if (box.intersects(child2->box)) {
+			result.push_back(dynamic_cast<ModuleWidget*>(child2));
+		}
+	}
+
+	return result;
+}
+
 bool RackWidget::requestModuleBoxNearest(ModuleWidget *m, Rect box) {
 	// Create possible positions
 	int x0 = roundf(box.pos.x / RACK_GRID_WIDTH);
@@ -527,6 +543,56 @@ bool RackWidget::requestModuleBoxNearest(ModuleWidget *m, Rect box) {
 			return true;
 	}
 	return false;
+}
+
+bool RackWidget::requestModuleBoxWithPush(ModuleWidget *m, Rect box) {
+
+	// Find new position
+	int x0 = roundf(box.pos.x / RACK_GRID_WIDTH);
+	int y0 = roundf(box.pos.y / RACK_GRID_HEIGHT);
+
+	Rect newBox = box;
+	newBox.pos = Vec(x0 * RACK_GRID_WIDTH, y0 * RACK_GRID_HEIGHT);
+
+	// If moving out of bounds, fail the move
+	if (newBox.pos.x < 0.f || newBox.pos.y < 0.f) {
+		return false;
+	}
+
+	// If moving to another row, fail the push
+	if (m->box.pos.y != newBox.pos.y) {
+		return false;
+	}
+
+	bool toTheRight = m->box.pos.x < box.pos.x;
+	bool toTheLeft = !toTheRight;
+
+	auto colliders = getCollidingWidgets(m, newBox);
+	if (colliders.size() > (size_t)1) {
+		// Hitting too many other modules
+		return false;
+	}
+
+	for (auto colliding : colliders) {
+		Rect newCollidingBox = colliding->box;
+		if (toTheRight && colliding->box.pos.x >= newBox.pos.x) {
+			newCollidingBox.pos.x = newBox.pos.x + newBox.size.x;
+		} else if (toTheLeft && colliding->box.pos.x <= newBox.pos.x) {
+			newCollidingBox.pos.x = newBox.pos.x - colliding->box.size.x;
+		} else {
+			// Moving module too fast - this module is trying to go the opposite way
+			return false;
+		}
+
+		if (!requestModuleBoxWithPush(colliding, newCollidingBox)) {
+			// We couldn't move a module out of the way - fail our move too
+			return false;
+		}
+	}
+
+	m->box = newBox;
+
+	return true;
 }
 
 void RackWidget::step() {

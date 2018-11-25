@@ -28,6 +28,11 @@ When placing a wire, if you right-click as you drag it, you can cycle the curren
 
 There are many ways of finding the html value of the colours you want, just search the web for "html color picker" or something similar.
 
+# Experiment - module pushing
+
+Holding shift while moving a module left or right will push any other modules it hits out of the way.
+This lets you push a bunch of modules together to easily make space for another module.
+
 # Rack
 
 *Rack* is the engine for the VCV open-source virtual modular synthesizer.
