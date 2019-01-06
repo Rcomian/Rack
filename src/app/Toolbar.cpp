@@ -4,6 +4,7 @@
 #include "asset.hpp"
 #include <thread>
 
+extern float FPS_LIMIT;
 
 namespace rack {
 
@@ -177,6 +178,41 @@ struct SampleRateButton : TooltipIconButton {
 	}
 };
 
+struct FPSLimitItem : MenuItem {
+	float fpsLimit;
+	void onAction(EventAction &e) override {
+		FPS_LIMIT = fpsLimit;
+	}
+};
+
+struct FPSLimitButton : TooltipIconButton {
+	FPSLimitButton() {
+		setSVG(SVG::load(assetGlobal("res/icons/Minimal-Computer-Screen-Monitor.svg")));
+		tooltipText = "FPS limit";
+	}
+	void onAction(EventAction &e) override {
+		if (FPS_LIMIT == 1.f) {
+			// 1 FPS is unusably slow for a menu and very obvious, bump it back up to 10 immediately
+			FPS_LIMIT = 10.f;
+		}
+
+		Menu *menu = gScene->createMenu();
+		menu->box.pos = getAbsoluteOffset(Vec(0, box.size.y));
+		menu->box.size.x = box.size.x;
+
+		menu->addChild(MenuLabel::create("FPS limit"));
+
+		std::vector<float> fpsLimits = {1, 10, 30, 60, 90, 120, 144};
+		for (float fpsLimit : fpsLimits) {
+			FPSLimitItem *item = new FPSLimitItem();
+			item->text = stringf("%.0f fps", fpsLimit);
+			item->rightText = CHECKMARK(FPS_LIMIT == fpsLimit);
+			item->fpsLimit = fpsLimit;
+			menu->addChild(item);
+		}
+	}
+};
+
 struct AudioThreadItem : MenuItem {
 	int threads;
 	void onAction(EventAction &e) override {
@@ -249,6 +285,7 @@ Toolbar::Toolbar() {
 	layout->addChild(new DisconnectCablesButton());
 
 	layout->addChild(new SampleRateButton());
+	layout->addChild(new FPSLimitButton());
 	layout->addChild(new PowerMeterButton());
 	layout->addChild(new AudioThreadsButton());
 	layout->addChild(new RackLockButton());

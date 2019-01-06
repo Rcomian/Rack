@@ -1,3 +1,10 @@
+# Experiment - FPS limiting
+
+An extra toolbar button lets you limit how many frames are rendered for the rack UI every second. This might help alleviate some kinds of CPU issues, especially on older macbooks.
+
+Various options are available from 144 down to 1 frame per second.
+At 1fps, the UI is unusable and will automatically switch to 10fps when you press the FPS button again.
+
 # Experiment - multi-threading
 
 Make the existing engine multi-threaded.

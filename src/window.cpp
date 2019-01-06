@@ -30,6 +30,7 @@
 	#include <ApplicationServices/ApplicationServices.h>
 #endif
 
+float FPS_LIMIT = 90.f;
 
 namespace rack {
 
@@ -493,7 +494,7 @@ void windowRun() {
 		// Limit framerate manually if vsync isn't working
 		double endTime = glfwGetTime();
 		double frameTime = endTime - startTime;
-		double minTime = 1.0 / 90.0;
+		double minTime = 1.0 / FPS_LIMIT;
 		if (frameTime < minTime) {
 			std::this_thread::sleep_for(std::chrono::duration<double>(minTime - frameTime));
 		}
