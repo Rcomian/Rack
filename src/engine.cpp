@@ -70,10 +70,10 @@ static std::atomic_int completedProcessors;
 class AudioProcessor {
 public:
 	AudioProcessor():
-	sleeping(false),
 	stepping(false),
 	running(true),
-	thread([this]{ audioThreadFunction(); })
+	thread([this]{ audioThreadFunction(); }),
+	sleeping(false)
 	{ }
 
 	void Stop() {
@@ -115,7 +115,7 @@ public:
 			if (!running) return;
 
 			int next = moduleIndex += 1;
-			while (next < gModules.size()) {
+			while (next < (int)gModules.size()) {
 				moduleStep(gModules[next]);
 				next = moduleIndex += 1;
 			}
@@ -233,12 +233,12 @@ static void engineStep() {
 	}
 
 	int next = moduleIndex += 1;
-	while (next < gModules.size()) {
+	while (next < (int)gModules.size()) {
 		moduleStep(gModules[next]);
 		next = moduleIndex += 1;
 	}
 
-	auto waitingFor = audioProcessors.size();
+	auto waitingFor = (int)audioProcessors.size();
 	while (completedProcessors < waitingFor) {
 		mainEngineSleepMutex.lock();
 		mainEngineSleepMutex.unlock();

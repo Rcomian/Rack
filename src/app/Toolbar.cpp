@@ -167,7 +167,7 @@ struct AudioThreadsButton : TooltipIconButton {
 		item->threads = 1;
 		menu->addChild(item);
 
-		auto maxThreads = std::thread::hardware_concurrency();
+		auto maxThreads = (int)std::thread::hardware_concurrency();
 		for (int t = 2; t < maxThreads; t += 1) { // add extra threads, range 2 to (hardware threads -1)
 			AudioThreadItem *item = new AudioThreadItem();
 			item->text = stringf("%d threads", t);
