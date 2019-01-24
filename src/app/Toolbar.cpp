@@ -154,21 +154,20 @@ struct FPSLimitButton : TooltipIconButton {
 		tooltipText = "FPS limit";
 	}
 	void onAction(EventAction &e) override {
-		if (FPS_LIMIT == 1.f) {
-			// 1 FPS is unusably slow for a menu and very obvious, bump it back up to 10 immediately
-			FPS_LIMIT = 10.f;
-		}
-
 		Menu *menu = gScene->createMenu();
 		menu->box.pos = getAbsoluteOffset(Vec(0, box.size.y));
 		menu->box.size.x = box.size.x;
 
 		menu->addChild(MenuLabel::create("FPS limit"));
 
-		std::vector<float> fpsLimits = {1, 10, 30, 60, 90, 120, 144};
+		std::vector<float> fpsLimits = {1, 5, 10, 15, 30, 60, 90, 120, 144};
 		for (float fpsLimit : fpsLimits) {
 			FPSLimitItem *item = new FPSLimitItem();
-			item->text = stringf("%.0f fps", fpsLimit);
+			if (fpsLimit == 1) {
+				item->text = stringf("%.0f fps (use caution)", fpsLimit);
+			} else {
+				item->text = stringf("%.0f fps", fpsLimit);
+			}
 			item->rightText = CHECKMARK(FPS_LIMIT == fpsLimit);
 			item->fpsLimit = fpsLimit;
 			menu->addChild(item);
