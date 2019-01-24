@@ -1,5 +1,3 @@
-See https://github.com/VCVRack/Rack/issues/1021 for issue report standards and https://github.com/VCVRack/Rack/issues/730 before posting any code or terminal output.
-
 # For bug reports
 
 Operating system(s):

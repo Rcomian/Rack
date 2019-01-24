@@ -1,4 +1,5 @@
 Copyright 2016 Andrew Belt
+Copyright 2019 FreeRack (inc mods by Jim Tupper)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 

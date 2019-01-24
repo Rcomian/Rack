@@ -23,11 +23,11 @@ static void midiInputCallback(double timeStamp, std::vector<unsigned char> *mess
 }
 
 RtMidiInputDevice::RtMidiInputDevice(int driverId, int deviceId) {
-	rtMidiIn = new RtMidiIn((RtMidi::Api) driverId, "VCV Rack");
+	rtMidiIn = new RtMidiIn((RtMidi::Api) driverId, "Free Rack");
 	assert(rtMidiIn);
 	rtMidiIn->ignoreTypes(false, false, false);
 	rtMidiIn->setCallback(midiInputCallback, this);
-	rtMidiIn->openPort(deviceId, "VCV Rack input");
+	rtMidiIn->openPort(deviceId, "Free Rack input");
 }
 
 RtMidiInputDevice::~RtMidiInputDevice() {

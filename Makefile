@@ -164,20 +164,6 @@ endif
 	cd dist && zip -5 -r Rack-SDK-$(VERSION)-$(ARCH).zip Rack-SDK
 
 
-# Obviously this will only work if you have the private keys to my server
-UPLOAD_URL := vortico@vcvrack.com:files/
-upload:
-ifdef ARCH_MAC
-	rsync dist/*.{dmg,zip} $(UPLOAD_URL) -zP
-endif
-ifdef ARCH_WIN
-	rsync dist/*.{exe,zip} $(UPLOAD_URL) -P
-endif
-ifdef ARCH_LIN
-	rsync dist/*.zip $(UPLOAD_URL) -zP
-endif
-
-
 # Plugin helpers
 
 allplugins:

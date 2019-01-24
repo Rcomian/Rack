@@ -6,12 +6,12 @@
 namespace rack {
 
 
-std::string gApplicationName = "VCV Rack";
+std::string gApplicationName = "Free Rack";
 std::string gApplicationVersion = TOSTRING(VERSION);
 std::string gApiHost = "https://api.vcvrack.com";
 // std::string gApiHost = "http://localhost:8081";
 std::string gLatestVersion;
-bool gCheckVersion = true;
+bool gCheckVersion = false;
 
 
 RackWidget *gRackWidget = NULL;
@@ -41,8 +41,9 @@ void appInit(bool devMode) {
 
 	// Request latest version from server
 	if (!devMode && gCheckVersion) {
-		std::thread t(checkVersion);
-		t.detach();
+		// Don't request latest version from stock api
+		// std::thread t(checkVersion);
+		// t.detach();
 	}
 }
 

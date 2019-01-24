@@ -68,14 +68,14 @@ void assetInit(bool devMode) {
 			HRESULT result = SHGetFolderPath(NULL, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, documentsBuf);
 			assert(result == S_OK);
 			assetLocalDir = documentsBuf;
-			assetLocalDir += "/Rack";
+			assetLocalDir += "/FreeRack";
 #endif
 #if ARCH_MAC
 			// Get home directory
 			struct passwd *pw = getpwuid(getuid());
 			assert(pw);
 			assetLocalDir = pw->pw_dir;
-			assetLocalDir += "/Documents/Rack";
+			assetLocalDir += "/Documents/FreeRack";
 #endif
 #if ARCH_LIN
 			// Get home directory
@@ -86,7 +86,7 @@ void assetInit(bool devMode) {
 				homeBuf = pw->pw_dir;
 			}
 			assetLocalDir = homeBuf;
-			assetLocalDir += "/.Rack";
+			assetLocalDir += "/.FreeRack";
 #endif
 		}
 	}

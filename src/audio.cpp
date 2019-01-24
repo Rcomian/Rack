@@ -244,7 +244,7 @@ void AudioIO::openStream() {
 
 		RtAudio::StreamOptions options;
 		options.flags |= RTAUDIO_JACK_DONT_CONNECT;
-		options.streamName = "VCV Rack";
+		options.streamName = "Free Rack";
 
 		int closestSampleRate = deviceInfo.preferredSampleRate;
 		for (int sr : deviceInfo.sampleRates) {
