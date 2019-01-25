@@ -28,6 +28,17 @@ When placing a wire, if you right-click as you drag it, you can cycle the curren
 
 There are many ways of finding the html value of the colours you want, just search the web for "html color picker" or something similar.
 
+# Experiment - append-patch
+
+Append an existing patch below your current patch.
+
+Lets you build a library of components and compose them together.
+
+Use the folder with a plus icon to access the append menu.
+You can append a whole patch, or skip the first row of the patch you're appending.
+
+The skip first row feature lets you build a component with audio and test trigger modules in the first row that don't get added to the combined patch when you append it.
+
 # Free Rack
 *FreeRack* is a free derivative version of the original open-source virtual modular synthesizer by VCV.
 

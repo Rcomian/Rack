@@ -165,6 +165,7 @@ struct RackWidget : OpaqueWidget {
 	/** Clears the rack and loads the template patch */
 	void reset();
 	void loadDialog();
+	void appendDialog(bool skipFirstRow);
 	void saveDialog();
 	void saveAsDialog();
 	/** If `lastPath` is defined, ask the user to reload it */
@@ -173,8 +174,9 @@ struct RackWidget : OpaqueWidget {
 	void disconnect();
 	void save(std::string filename);
 	void load(std::string filename);
+	void append(std::string filename, bool skipFirstRow);
 	json_t *toJson();
-	void fromJson(json_t *rootJ);
+	void fromJson(json_t *rootJ, int rowOffset, bool skipFirstRow);
 	/** Creates a module and adds it to the rack */
 	ModuleWidget *moduleFromJson(json_t *moduleJ);
 	void pastePresetClipboard();
