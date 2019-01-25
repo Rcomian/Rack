@@ -4,6 +4,7 @@
 #include "asset.hpp"
 #include <thread>
 
+extern float FPS_LIMIT;
 
 namespace rack {
 
@@ -178,6 +179,40 @@ struct AudioThreadsButton : TooltipIconButton {
 	}
 };
 
+struct FPSLimitItem : MenuItem {
+	float fpsLimit;
+	void onAction(EventAction &e) override {
+		FPS_LIMIT = fpsLimit;
+	}
+};
+
+struct FPSLimitButton : TooltipIconButton {
+	FPSLimitButton() {
+		setSVG(SVG::load(assetGlobal("res/icons/Minimal-Computer-Screen-Monitor.svg")));
+		tooltipText = "FPS limit";
+	}
+	void onAction(EventAction &e) override {
+		Menu *menu = gScene->createMenu();
+		menu->box.pos = getAbsoluteOffset(Vec(0, box.size.y));
+		menu->box.size.x = box.size.x;
+
+		menu->addChild(MenuLabel::create("FPS limit"));
+
+		std::vector<float> fpsLimits = {1, 5, 10, 15, 30, 60, 90, 120, 144};
+		for (float fpsLimit : fpsLimits) {
+			FPSLimitItem *item = new FPSLimitItem();
+			if (fpsLimit == 1) {
+				item->text = stringf("%.0f fps (use caution)", fpsLimit);
+			} else {
+				item->text = stringf("%.0f fps", fpsLimit);
+			}
+			item->rightText = CHECKMARK(FPS_LIMIT == fpsLimit);
+			item->fpsLimit = fpsLimit;
+			menu->addChild(item);
+		}
+	}
+};
+
 struct RackLockButton : TooltipIconButton {
 	RackLockButton() {
 		setSVG(SVG::load(assetGlobal("res/icons/noun_468341_cc.svg")));
@@ -212,6 +247,7 @@ Toolbar::Toolbar() {
 	layout->addChild(new DisconnectCablesButton());
 
 	layout->addChild(new SampleRateButton());
+	layout->addChild(new FPSLimitButton());
 	layout->addChild(new PowerMeterButton());
 	layout->addChild(new AudioThreadsButton());
 	layout->addChild(new RackLockButton());

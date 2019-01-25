@@ -5,6 +5,7 @@
 #include "plugin.hpp"
 #include <jansson.h>
 
+extern float FPS_LIMIT;
 
 namespace rack {
 
@@ -75,6 +76,9 @@ static json_t *settingsToJson() {
 
 	// audioThreads
 	json_object_set_new(rootJ, "audioThreads", json_integer(engineGetAudioThreads()));
+
+	// fps limit
+	json_object_set_new(rootJ, "fpsLimit", json_real(FPS_LIMIT));
 
 	return rootJ;
 }
@@ -159,6 +163,12 @@ static void settingsFromJson(json_t *rootJ) {
 	json_t *audioThreadsJ = json_object_get(rootJ, "audioThreads");
 	if (audioThreadsJ)
 		engineSetAudioThreads(json_integer_value(audioThreadsJ));
+
+	// fps
+	json_t *fpsLimitJ = json_object_get(rootJ, "fpsLimit");
+	if (fpsLimitJ) {
+		FPS_LIMIT = json_number_value(fpsLimitJ);
+	}
 }
 
 
