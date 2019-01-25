@@ -10,6 +10,11 @@ An extra toolbar button lets you limit how many frames are rendered for the rack
 Various options are available from 144 down to 1 frame per second.
 At 1fps, the UI is unusable and will automatically switch to 10fps when you press the FPS button again.
 
+# Experiment - module pushing
+
+Holding shift while moving a module left or right will push any other modules it hits out of the way.
+This lets you push a bunch of modules together to easily make space for another module.
+
 # Free Rack
 *FreeRack* is a free derivative version of the original open-source virtual modular synthesizer by VCV.
 
