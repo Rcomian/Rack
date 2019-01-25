@@ -73,6 +73,9 @@ static json_t *settingsToJson() {
 	// checkVersion
 	json_object_set_new(rootJ, "checkVersion", json_boolean(gCheckVersion));
 
+	// audioThreads
+	json_object_set_new(rootJ, "audioThreads", json_integer(engineGetAudioThreads()));
+
 	return rootJ;
 }
 
@@ -151,6 +154,11 @@ static void settingsFromJson(json_t *rootJ) {
 	json_t *checkVersionJ = json_object_get(rootJ, "checkVersion");
 	if (checkVersionJ)
 		gCheckVersion = json_boolean_value(checkVersionJ);
+
+	// audioThreads
+	json_t *audioThreadsJ = json_object_get(rootJ, "audioThreads");
+	if (audioThreadsJ)
+		engineSetAudioThreads(json_integer_value(audioThreadsJ));
 }
 
 

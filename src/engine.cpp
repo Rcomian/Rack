@@ -8,6 +8,7 @@
 #include <thread>
 #include <xmmintrin.h>
 #include <pmmintrin.h>
+#include <atomic>
 
 #include "engine.hpp"
 
@@ -61,15 +62,126 @@ void Wire::step() {
 	inputModule->inputs[inputId].value = value;
 }
 
+static void moduleStep(Module*);
+static std::atomic_int moduleIndex;
+static std::atomic_int completedProcessors;
+
+
+class AudioProcessor {
+public:
+	AudioProcessor():
+	stepping(false),
+	running(true),
+	thread([this]{ audioThreadFunction(); }),
+	sleeping(false)
+	{ }
+
+	void Stop() {
+		running = false;
+		thread.join();
+	}
+
+	void Step() {
+		stepping = true;
+	}
+
+	bool IsStepping() {
+		return stepping;
+	}
+
+	void Sleep() {
+		sleepMutex.lock();
+		sleeping = true;
+	}
+
+	void Wake() {
+		if (sleeping) {
+			sleepMutex.unlock();
+			sleeping = false;
+		}
+	}
+
+	void audioThreadFunction() {
+
+		while (running) {
+			// run this thread as a busy loop
+
+			while (running && !stepping) { // Busy wait for stepping to set
+				if (sleepMutex.try_lock_for(std::chrono::milliseconds(200))) {
+					sleepMutex.unlock();
+				}
+			} 
+
+			if (!running) return;
+
+			int next = moduleIndex += 1;
+			while (next < (int)gModules.size()) {
+				moduleStep(gModules[next]);
+				next = moduleIndex += 1;
+			}
+
+			stepping = false;
+			completedProcessors++;
+		}
+
+	}
+
+private:
+	volatile bool stepping;
+	volatile bool running;
+	std::thread thread;
+	std::timed_mutex sleepMutex;
+	bool sleeping;
+};
+
+static std::vector<AudioProcessor*> audioProcessors;
+
 
 void engineInit() {
 }
 
 void engineDestroy() {
+
+	engineSetAudioThreads(0);
+
 	// Make sure there are no wires or modules in the rack on destruction. This suggests that a module failed to remove itself before the RackWidget was destroyed.
 	assert(gWires.empty());
 	assert(gModules.empty());
 }
+
+static void moduleStep(Module* module) {
+	std::chrono::high_resolution_clock::time_point startTime;
+	if (gPowerMeter) {
+		startTime = std::chrono::high_resolution_clock::now();
+
+		module->step();
+
+		auto stopTime = std::chrono::high_resolution_clock::now();
+		float cpuTime = std::chrono::duration<float>(stopTime - startTime).count() * sampleRate;
+		module->cpuTime += (cpuTime - module->cpuTime) * sampleTime / 0.5f;
+	}
+	else {
+		module->step();
+	}
+
+	// Step ports
+	for (Input &input : module->inputs) {
+		if (input.active) {
+			float value = input.value / 5.f;
+			input.plugLights[0].setBrightnessSmooth(value);
+			input.plugLights[1].setBrightnessSmooth(-value);
+		}
+	}
+	for (Output &output : module->outputs) {
+		if (output.active) {
+			float value = output.value / 5.f;
+			output.plugLights[0].setBrightnessSmooth(value);
+			output.plugLights[1].setBrightnessSmooth(-value);
+		}
+	}
+}
+
+std::mutex mainEngineSleepMutex;
 
 static void engineStep() {
 	// Sample rate
@@ -112,37 +224,24 @@ static void engineStep() {
 		}
 	}
 
+	moduleIndex = -1;
+	completedProcessors = 0;
+
 	// Step modules
-	for (Module *module : gModules) {
-		std::chrono::high_resolution_clock::time_point startTime;
-		if (gPowerMeter) {
-			startTime = std::chrono::high_resolution_clock::now();
+	for (auto audioProcessor : audioProcessors) {
+		audioProcessor->Step();
+	}
 
-			module->step();
+	int next = moduleIndex += 1;
+	while (next < (int)gModules.size()) {
+		moduleStep(gModules[next]);
+		next = moduleIndex += 1;
+	}
 
-			auto stopTime = std::chrono::high_resolution_clock::now();
-			float cpuTime = std::chrono::duration<float>(stopTime - startTime).count() * sampleRate;
-			module->cpuTime += (cpuTime - module->cpuTime) * sampleTime / 0.5f;
-		}
-		else {
-			module->step();
-		}
-
-		// Step ports
-		for (Input &input : module->inputs) {
-			if (input.active) {
-				float value = input.value / 5.f;
-				input.plugLights[0].setBrightnessSmooth(value);
-				input.plugLights[1].setBrightnessSmooth(-value);
-			}
-		}
-		for (Output &output : module->outputs) {
-			if (output.active) {
-				float value = output.value / 5.f;
-				output.plugLights[0].setBrightnessSmooth(value);
-				output.plugLights[1].setBrightnessSmooth(-value);
-			}
-		}
+	auto waitingFor = (int)audioProcessors.size();
+	while (completedProcessors < waitingFor) {
+		mainEngineSleepMutex.lock();
+		mainEngineSleepMutex.unlock();
 	}
 
 	// Step cables by moving their output values to inputs
@@ -185,7 +284,9 @@ static void engineRun() {
 		// The number of steps to wait before possibly sleeping
 		const double aheadMax = 1.0; // seconds
 		if (ahead > aheadMax) {
+			engineSleep();
 			std::this_thread::sleep_for(std::chrono::duration<double>(stepTime));
+			engineWake();
 		}
 	}
 }
@@ -198,6 +299,71 @@ void engineStart() {
 void engineStop() {
 	running = false;
 	thread.join();
+}
+
+bool engineAddAudioThread() {
+	info("Add audio processing thread");
+
+	VIPLock vipLock(vipMutex);
+	std::lock_guard<std::mutex> lock(mutex);
+
+	if (audioProcessors.size() >= std::thread::hardware_concurrency()-1) return false;
+
+	audioProcessors.push_back(new AudioProcessor());
+
+	return true;
+}
+
+bool engineRemoveAudioThread() {
+	info("Remove audio processing thread");
+
+	VIPLock vipLock(vipMutex);
+	std::lock_guard<std::mutex> lock(mutex);
+
+	if (audioProcessors.size() > 0) {
+		AudioProcessor* audioProcessor = audioProcessors.back();
+		audioProcessors.pop_back();
+		audioProcessor->Stop();
+		delete audioProcessor;
+
+		return true;
+	}
+
+	return false;
+}
+
+int engineGetAudioThreads() {
+	VIPLock vipLock(vipMutex);
+	std::lock_guard<std::mutex> lock(mutex);
+
+	return audioProcessors.size() + 1;
+}
+
+void engineSetAudioThreads(int threads) {
+	info("Set audio threads %d", threads);
+
+	while (threads > engineGetAudioThreads()) {
+		if (!engineAddAudioThread()) break;
+	}
+
+	while (threads < engineGetAudioThreads()) {
+		if (!engineRemoveAudioThread()) break;
+	}
+
+}
+
+void engineSleep() {
+	mainEngineSleepMutex.lock();
+	for (auto audioProcessor : audioProcessors) {
+		audioProcessor->Sleep();
+	}
+}
+
+void engineWake() {
+	for (auto audioProcessor : audioProcessors) {
+		audioProcessor->Wake();
+	}
+	mainEngineSleepMutex.unlock();
 }
 
 void engineAddModule(Module *module) {
