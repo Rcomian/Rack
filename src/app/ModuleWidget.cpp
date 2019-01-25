@@ -340,7 +340,11 @@ void ModuleWidget::onMouseDown(EventMouseDown &e) {
 		return;
 
 	if (e.button == 1) {
-		createContextMenu();
+		if (gRackWidget->wireContainer->activeWire == NULL) {
+			createContextMenu();
+		} else {
+			gRackWidget->wireContainer->activeWire->color = WireWidget::nextColor();
+		}
 	}
 	e.consumed = true;
 	e.target = this;

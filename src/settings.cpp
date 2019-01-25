@@ -80,6 +80,9 @@ static json_t *settingsToJson() {
 	// fps limit
 	json_object_set_new(rootJ, "fpsLimit", json_real(FPS_LIMIT));
 
+	// wireColors
+	json_object_set_new(rootJ, "wireColors", appWireColorsToJson());
+
 	return rootJ;
 }
 
@@ -169,6 +172,11 @@ static void settingsFromJson(json_t *rootJ) {
 	if (fpsLimitJ) {
 		FPS_LIMIT = json_number_value(fpsLimitJ);
 	}
+
+	// colors
+	json_t *wireColorsJ = json_object_get(rootJ, "wireColors");
+	if (wireColorsJ)
+		appWireColorsFromJson(wireColorsJ);
 }
 
 
