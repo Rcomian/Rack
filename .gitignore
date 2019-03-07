@@ -11,3 +11,7 @@
 /patches
 /design
 .DS_Store
+
+.vscode/settings.json
+SubmarineUtility/WireManager.json
+VCV-Host.json
