@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -14,8 +12,8 @@
    viewBox="0 0 50.799999 128.50069"
    version="1.1"
    id="svg54918"
-   inkscape:version="0.92.4 5da689c313, 2019-01-14"
-   sodipodi:docname="Audio-8.svg">
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15, custom)"
+   sodipodi:docname="AudioInterface.svg">
   <defs
      id="defs54912" />
   <sodipodi:namedview
@@ -26,7 +24,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="208.83213"
+     inkscape:cx="-30.068948"
      inkscape:cy="224.7475"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -39,7 +37,8 @@
      inkscape:window-height="882"
      inkscape:window-x="0"
      inkscape:window-y="18"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="0"
+     inkscape:document-rotation="0" />
   <metadata
      id="metadata54915">
     <rdf:RDF>
@@ -48,7 +47,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -101,26 +100,6 @@
        inkscape:connector-curvature="0"
        id="path39375"
        d="m 342.05585,59.609198 c 0,-0.549834 -0.45062,-0.999075 -1.00045,-0.999075 h -19.28151 c -0.55122,0 -1.00046,0.449241 -1.00046,0.999075 v 12.173588 c 0,0.54984 0.44924,1.00046 1.00046,1.00046 h 19.28151 c 0.54983,0 1.00045,-0.45062 1.00045,-1.00046 z m 0,0"
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.35277775" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path39377"
-       d="m 340.26165,95.547056 c -0.11714,0 -0.22462,-0.0661 -0.27561,-0.1695 l -1.00321,-2.00504 c -0.0758,-0.15296 -0.0138,-0.33762 0.1378,-0.41479 0.15296,-0.0758 0.33762,-0.0138 0.41341,0.13918 l 0.72761,1.45245 0.72622,-1.45245 c 0.0758,-0.15296 0.26183,-0.21497 0.41341,-0.13918 0.15297,0.0772 0.21498,0.26183 0.13781,0.41479 l -1.00184,2.00504 c -0.0524,0.10336 -0.15985,0.1695 -0.2756,0.1695"
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.35277775" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path39379"
-       d="m 345.76691,95.547056 c -0.11713,0 -0.22324,-0.0661 -0.27561,-0.1695 l -1.00183,-2.00504 c -0.0772,-0.15296 -0.0152,-0.33762 0.1378,-0.41479 0.15159,-0.0758 0.33762,-0.0138 0.41341,0.13918 l 0.72623,1.45245 0.72623,-1.45245 c 0.0758,-0.15296 0.26182,-0.21497 0.41341,-0.13918 0.15296,0.0772 0.21497,0.26183 0.13918,0.41479 l -1.00321,2.00504 c -0.0524,0.10336 -0.15848,0.1695 -0.27561,0.1695"
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.35277775" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path39381"
-       d="m 343.1638,95.547056 c -0.72347,0 -1.31052,-0.58705 -1.31052,-1.31051 0,-0.72209 0.58705,-1.31052 1.31052,-1.31052 0.28663,0 0.5581,0.091 0.78686,0.26183 0.13642,0.10197 0.16398,0.29628 0.0606,0.4327 -0.10198,0.13505 -0.2949,0.16261 -0.43133,0.0606 -0.11989,-0.091 -0.26458,-0.13919 -0.41617,-0.13919 -0.38309,0 -0.69453,0.31145 -0.69453,0.69454 0,0.38309 0.31144,0.69453 0.69453,0.69453 0.15159,0 0.29628,-0.0482 0.41617,-0.13918 0.13643,-0.10198 0.32935,-0.0744 0.43133,0.062 0.10335,0.13505 0.0758,0.32935 -0.0606,0.43132 -0.22876,0.17088 -0.50023,0.26183 -0.78686,0.26183"
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.35277775" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path39383"
-       d="m 343.58548,94.221386 c 0,0.22186 -0.18053,0.40101 -0.40239,0.40101 -0.22049,0 -0.39963,-0.17915 -0.39963,-0.40101 0,-0.22186 0.17914,-0.40101 0.39963,-0.40101 0.22186,0 0.40239,0.17915 0.40239,0.40101"
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.35277775" />
     <path
        inkscape:connector-curvature="0"

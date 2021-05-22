@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -14,7 +12,7 @@
    viewBox="0 0 96.520546 128.50067"
    version="1.1"
    id="svg56125"
-   inkscape:version="0.92.4 5da689c313, 2019-01-14"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15, custom)"
    sodipodi:docname="AudioInterface16.svg">
   <defs
      id="defs56119" />
@@ -26,7 +24,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="323.88121"
+     inkscape:cx="84.980132"
      inkscape:cy="256.1436"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -39,7 +37,8 @@
      inkscape:window-height="882"
      inkscape:window-x="0"
      inkscape:window-y="18"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="0"
+     inkscape:document-rotation="0" />
   <metadata
      id="metadata56122">
     <rdf:RDF>
@@ -48,7 +47,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -67,26 +66,6 @@
        id="path37757"
        d="M 60.355512,84.582993 H -36.165036 V 213.08367 H 60.355512 Z M 60.168099,212.89626 H -35.977623 V 84.770407 h 96.145722 z m 0,0"
        style="fill:#ababab;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.35277775" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path40283"
-       d="m 9.3419161,208.93991 c -0.115752,0 -0.223239,-0.0661 -0.275606,-0.1695 l -1.001834,-2.00504 c -0.07579,-0.15296 -0.01516,-0.33762 0.137803,-0.41479 0.151585,-0.0758 0.337619,-0.0138 0.413414,0.13918 l 0.726223,1.45245 0.7276039,-1.45245 c 0.0758,-0.15296 0.260451,-0.21497 0.413414,-0.13918 0.152961,0.0772 0.213596,0.26183 0.137803,0.41479 l -1.0018339,2.00504 c -0.05237,0.10336 -0.159853,0.1695 -0.276987,0.1695"
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.35277775" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path40285"
-       d="m 14.848559,208.93991 c -0.117133,0 -0.22462,-0.0661 -0.275608,-0.1695 l -1.00321,-2.00504 c -0.07579,-0.15296 -0.01378,-0.33762 0.1378,-0.41479 0.152966,-0.0758 0.337619,-0.0138 0.413414,0.13918 l 0.727604,1.45245 0.726226,-1.45245 c 0.07579,-0.15296 0.261827,-0.21497 0.413412,-0.13918 0.152961,0.0772 0.214974,0.26183 0.137803,0.41479 l -1.001832,2.00504 c -0.05237,0.10336 -0.159856,0.1695 -0.275609,0.1695"
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.35277775" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path40287"
-       d="m 12.245443,208.93991 c -0.723469,0 -1.311891,-0.58705 -1.311891,-1.31051 0,-0.72209 0.588422,-1.31052 1.311891,-1.31052 0.285253,0 0.558107,0.091 0.78686,0.26183 0.135049,0.10197 0.162611,0.29628 0.06063,0.4327 -0.101973,0.13505 -0.294896,0.16261 -0.431323,0.0606 -0.121267,-0.091 -0.264584,-0.13919 -0.416169,-0.13919 -0.383095,0 -0.694531,0.31145 -0.694531,0.69454 0,0.38309 0.311436,0.69453 0.694531,0.69453 0.151585,0 0.294902,-0.0482 0.416169,-0.13918 0.136427,-0.10198 0.32935,-0.0744 0.431323,0.062 0.101979,0.13505 0.07442,0.32935 -0.06063,0.43132 -0.228753,0.17088 -0.501607,0.26183 -0.78686,0.26183"
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.35277775" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path40289"
-       d="m 12.665747,207.61424 c 0,0.22186 -0.179147,0.40101 -0.40101,0.40101 -0.220486,0 -0.401008,-0.17915 -0.401008,-0.40101 0,-0.22186 0.180522,-0.40101 0.401008,-0.40101 0.221863,0 0.40101,0.17915 0.40101,0.40101"
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.35277775" />
     <path
        inkscape:connector-curvature="0"
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.35277775"
