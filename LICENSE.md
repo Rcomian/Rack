@@ -1,3 +1,11 @@
+# FreeRack
+
+FreeRack is a freely distributable derivative of VCV Rack.
+It follows only the original V1 source code and is intended to serve as correctly licenced base for further forks.
+
+VCV does not provide support of any kind for FreeRack, please use the official VCV version if you require support from VCV.
+
+
 # VCV Rack Licenses
 
 All VCV Rack **source code** is copyright © 2019 [VCV](https://vcvrack.com/) and licensed under the [GNU General Public License v3.0](LICENSE-GPLv3.txt) with the "VCV Rack Non-Commercial Plugin License Exception", allowed under section 7 of GPLv3, and a commercial licensing option.

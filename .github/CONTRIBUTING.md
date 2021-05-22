@@ -1,3 +1,4 @@
+FreeRack only follows the original source code of VCV Rack. Further forks of FreeRack are encouraged to provide experimentation and packaging options provided that it is clear that VCV will not provide support for these.
 
 VCV Rack is [open-source](https://opensource.org/osd) but not [open-contribution](https://opensource.guide/how-to-contribute/).
 VCV is unable to accept free code contributions to Rack for the following reasons.

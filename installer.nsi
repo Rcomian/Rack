@@ -1,15 +1,15 @@
 !include "MUI2.nsh"
 
-Name "VCV Rack ${VERSION}"
+Name "FreeRack ${VERSION}"
 OutFile "installer.exe"
 SetCompressor /solid "lzma"
 CRCCheck On
 
 ; Default installation folder
-InstallDir "$PROGRAMFILES\VCV\Rack"
+InstallDir "$PROGRAMFILES\FreeRack\Rack"
 
 ; Get installation folder from registry if available
-InstallDirRegKey HKLM "Software\VCV\Rack" ""
+InstallDirRegKey HKLM "Software\FreeRack\Rack" ""
 
 ; Request admin permissions so we can install to Program Files and add a registry entry
 RequestExecutionLevel admin
@@ -31,7 +31,7 @@ RequestExecutionLevel admin
 !insertmacro MUI_PAGE_INSTFILES
 
 !define MUI_FINISHPAGE_RUN "$INSTDIR\Rack.exe"
-!define MUI_FINISHPAGE_RUN_TEXT "Launch VCV Rack"
+!define MUI_FINISHPAGE_RUN_TEXT "Launch FreeRack"
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_CONFIRM
@@ -43,39 +43,39 @@ RequestExecutionLevel admin
 
 ; Sections
 
-Section "VCV Rack" VCV_RACK_SECTION
+Section "FreeRack" FREE_RACK_SECTION
 	SectionIn RO
 	SetOutPath "$INSTDIR"
 
 	File /r "dist\Rack\*"
 
 	; Store installation folder
-	WriteRegStr HKLM "Software\VCV\Rack" "" "$INSTDIR"
+	WriteRegStr HKLM "Software\FreeRack\Rack" "" "$INSTDIR"
 
 	; Write uninstaller info
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VCV Rack" "DisplayName" "VCV Rack"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VCV Rack" "DisplayIcon" '"$INSTDIR\Rack.exe"'
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VCV Rack" "DisplayVersion" "${VERSION}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VCV Rack" "UninstallString" '"$INSTDIR\Uninstall.exe"'
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VCV Rack" "QuietUninstallString" '"$INSTDIR\Uninstall.exe" /S'
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VCV Rack" "InstallLocation" '"$INSTDIR"'
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VCV Rack" "Publisher" "VCV"
-	SectionGetSize ${VCV_RACK_SECTION} $0
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VCV Rack" "EstimatedSize" $0
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VCV Rack" "NoModify" 1
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VCV Rack" "NoRepair" 1
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeRack" "DisplayName" "FreeRack"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeRack" "DisplayIcon" '"$INSTDIR\Rack.exe"'
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeRack" "DisplayVersion" "${VERSION}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeRack" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeRack" "QuietUninstallString" '"$INSTDIR\Uninstall.exe" /S'
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeRack" "InstallLocation" '"$INSTDIR"'
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeRack" "Publisher" "FreeRack"
+	SectionGetSize ${FREE_RACK_SECTION} $0
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeRack" "EstimatedSize" $0
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeRack" "NoModify" 1
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeRack" "NoRepair" 1
 
 	; Create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 	; Associate file type
-	WriteRegStr HKLM "Software\Classes\.vcv" "" "VCVRack.Patch"
-	WriteRegStr HKLM "Software\Classes\VCVRack.Patch" "" "VCV Rack Patch"
-	WriteRegStr HKLM "Software\Classes\VCVRack.Patch\shell\open\command" "" '"$INSTDIR\Rack.exe" "%1"'
+	WriteRegStr HKLM "Software\Classes\.vcv" "" "FreeRack.Patch"
+	WriteRegStr HKLM "Software\Classes\FreeRack.Patch" "" "FreeRack Patch"
+	WriteRegStr HKLM "Software\Classes\FreeRack.Patch\shell\open\command" "" '"$INSTDIR\Rack.exe" "%1"'
 
 	; Create shortcuts
 	CreateDirectory "$SMPROGRAMS"
-	CreateShortcut "$SMPROGRAMS\VCV Rack.lnk" "$INSTDIR\Rack.exe"
+	CreateShortcut "$SMPROGRAMS\FreeRack.lnk" "$INSTDIR\Rack.exe"
 SectionEnd
 
 
@@ -86,13 +86,13 @@ Section "Uninstall"
 	RMDir "$INSTDIR"
 	RMDir "$INSTDIR\.."
 
-	Delete "$SMPROGRAMS\VCV Rack.lnk"
+	Delete "$SMPROGRAMS\FreeRack.lnk"
 
-	DeleteRegKey HKLM "Software\VCV\Rack"
-	DeleteRegKey /ifempty HKLM "Software\VCV"
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VCV Rack"
+	DeleteRegKey HKLM "Software\FreeRack\Rack"
+	DeleteRegKey /ifempty HKLM "Software\FreeRack"
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\FreeRack"
 	DeleteRegKey HKLM "Software\Classes\.vcv"
-	DeleteRegKey HKLM "Software\Classes\VCVRack.Patch"
+	DeleteRegKey HKLM "Software\Classes\FreeRack.Patch"
 SectionEnd
 
 

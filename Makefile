@@ -185,20 +185,6 @@ ifdef ARCH_MAC
 endif
 
 
-UPLOAD_URL := vortico@vcvrack.com:files/
-upload:
-	# This will only work if you have a private key to my server
-ifdef ARCH_MAC
-	rsync dist/$(DIST_NAME).zip $(UPLOAD_URL) -zP
-endif
-ifdef ARCH_WIN
-	rsync dist/$(DIST_NAME).zip dist/$(DIST_NAME).exe dist/$(DIST_SDK) $(UPLOAD_URL) -P
-endif
-ifdef ARCH_LIN
-	rsync dist/$(DIST_NAME).zip $(UPLOAD_URL) -zP
-endif
-
-
 # Plugin helpers
 
 plugins:

@@ -21,7 +21,7 @@ struct Scene : widget::OpaqueWidget {
 	double lastAutosaveTime = 0.0;
 
 	// Version checking
-	bool checkVersion = true;
+	bool checkVersion = false;
 	bool checkedVersion = false;
 	std::string latestVersion;
 

@@ -20,30 +20,32 @@ static std::string downloadUrl;
 
 
 static void checkVersion() {
-	std::string versionUrl = app::API_URL + "/version";
-	json_t* resJ = network::requestJson(network::METHOD_GET, versionUrl, NULL);
-	if (!resJ) {
-		WARN("Request for version failed");
-		return;
-	}
-	DEFER({
-		json_decref(resJ);
-	});
+		// Do not check version against upstream
 
-	json_t* versionJ = json_object_get(resJ, "version");
-	if (versionJ)
-		version = json_string_value(versionJ);
+	// std::string versionUrl = app::API_URL + "/version";
+	// json_t* resJ = network::requestJson(network::METHOD_GET, versionUrl, NULL);
+	// if (!resJ) {
+	// 	WARN("Request for version failed");
+	// 	return;
+	// }
+	// DEFER({
+	// 	json_decref(resJ);
+	// });
 
-	json_t* changelogUrlJ = json_object_get(resJ, "changelogUrl");
-	if (changelogUrlJ)
-		changelogUrl = json_string_value(changelogUrlJ);
+	// json_t* versionJ = json_object_get(resJ, "version");
+	// if (versionJ)
+	// 	version = json_string_value(versionJ);
 
-	json_t* downloadUrlsJ = json_object_get(resJ, "downloadUrls");
-	if (downloadUrlsJ) {
-		json_t* downloadUrlJ = json_object_get(downloadUrlsJ, app::APP_ARCH.c_str());
-		if (downloadUrlJ)
-			downloadUrl = json_string_value(downloadUrlJ);
-	}
+	// json_t* changelogUrlJ = json_object_get(resJ, "changelogUrl");
+	// if (changelogUrlJ)
+	// 	changelogUrl = json_string_value(changelogUrlJ);
+
+	// json_t* downloadUrlsJ = json_object_get(resJ, "downloadUrls");
+	// if (downloadUrlsJ) {
+	// 	json_t* downloadUrlJ = json_object_get(downloadUrlsJ, app::APP_ARCH.c_str());
+	// 	if (downloadUrlJ)
+	// 		downloadUrl = json_string_value(downloadUrlJ);
+	// }
 }
 
 

@@ -14,7 +14,7 @@
 namespace rack {
 
 
-static const char PATCH_FILTERS[] = "VCV Rack patch (.vcv):vcv";
+static const char PATCH_FILTERS[] = "FreeRack patch (.vcv):vcv";
 
 
 PatchManager::PatchManager() {

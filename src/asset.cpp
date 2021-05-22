@@ -91,14 +91,14 @@ void init() {
 			wchar_t documentsBufShortW[MAX_PATH];
 			GetShortPathNameW(documentsBufW, documentsBufShortW, LENGTHOF(documentsBufShortW));
 			userDir = string::fromWstring(documentsBufShortW);
-			userDir += "/Rack";
+			userDir += "/FreeRack";
 #endif
 #if defined ARCH_MAC
 			// Get home directory
 			struct passwd* pw = getpwuid(getuid());
 			assert(pw);
 			userDir = pw->pw_dir;
-			userDir += "/Documents/Rack";
+			userDir += "/Documents/FreeRack";
 #endif
 #if defined ARCH_LIN
 			// Get home directory
@@ -109,7 +109,7 @@ void init() {
 				homeBuf = pw->pw_dir;
 			}
 			userDir = homeBuf;
-			userDir += "/.Rack";
+			userDir += "/.FreeRack";
 #endif
 		}
 	}

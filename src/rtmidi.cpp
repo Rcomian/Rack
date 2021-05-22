@@ -17,11 +17,11 @@ struct RtMidiInputDevice : midi::InputDevice {
 	RtMidiIn* rtMidiIn;
 
 	RtMidiInputDevice(int driverId, int deviceId) {
-		rtMidiIn = new RtMidiIn((RtMidi::Api) driverId, "VCV Rack");
+		rtMidiIn = new RtMidiIn((RtMidi::Api) driverId, "FreeRack");
 		assert(rtMidiIn);
 		rtMidiIn->ignoreTypes(false, false, false);
 		rtMidiIn->setCallback(midiInputCallback, this);
-		rtMidiIn->openPort(deviceId, "VCV Rack input");
+		rtMidiIn->openPort(deviceId, "FreeRack input");
 	}
 
 	~RtMidiInputDevice() {
@@ -57,9 +57,9 @@ struct RtMidiOutputDevice : midi::OutputDevice {
 	RtMidiOut* rtMidiOut;
 
 	RtMidiOutputDevice(int driverId, int deviceId) {
-		rtMidiOut = new RtMidiOut((RtMidi::Api) driverId, "VCV Rack");
+		rtMidiOut = new RtMidiOut((RtMidi::Api) driverId, "FreeRack");
 		assert(rtMidiOut);
-		rtMidiOut->openPort(deviceId, "VCV Rack output");
+		rtMidiOut->openPort(deviceId, "FreeRack output");
 	}
 
 	~RtMidiOutputDevice() {

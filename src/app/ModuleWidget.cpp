@@ -18,7 +18,7 @@ namespace rack {
 namespace app {
 
 
-static const char PRESET_FILTERS[] = "VCV Rack module preset (.vcvm):vcvm";
+static const char PRESET_FILTERS[] = "FreeRack module preset (.vcvm):vcvm";
 
 
 struct ModuleUrlItem : ui::MenuItem {
