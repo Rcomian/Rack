@@ -5,7 +5,6 @@ It follows only the original V1 source code and is intended to serve as correctl
 
 VCV does not provide support of any kind for FreeRack, please use the official VCV version if you require support from VCV.
 
-
 # VCV Rack Licenses
 
 All VCV Rack **source code** is copyright © 2019 [VCV](https://vcvrack.com/) and licensed under the [GNU General Public License v3.0](LICENSE-GPLv3.txt) with the "VCV Rack Non-Commercial Plugin License Exception", allowed under section 7 of GPLv3, and a commercial licensing option.
@@ -35,6 +34,8 @@ The **visual design of the Core modules** is copyright © 2019 [VCV](https://vcv
 Commercial use and derivative works are not allowed.
 
 The **VCV logo and icon** are copyright © 2017 VCV and may not be used in derivative works.
+
+The **FreeRack logo and icon** are copyright © 2021 Rcomian and may be used in derivative works.
 
 The **"VCV" name** is trademarked and may not be used for unofficial products.
 However, it is acceptable to use the phrase "for VCV Rack" for promotion of your Rack plugin.
