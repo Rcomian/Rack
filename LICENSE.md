@@ -35,7 +35,7 @@ Commercial use and derivative works are not allowed.
 
 The **VCV logo and icon** are copyright © 2017 VCV and may not be used in derivative works.
 
-The **FreeRack logo and icon** are copyright © 2021 Rcomian and may be used in derivative works.
+The **FreeRack logo and icon** are copyright © 2021 Rcomian and may be used in derivative works. [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 The **"VCV" name** is trademarked and may not be used for unofficial products.
 However, it is acceptable to use the phrase "for VCV Rack" for promotion of your Rack plugin.
